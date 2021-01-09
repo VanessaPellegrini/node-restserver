@@ -3,4 +3,12 @@
 //========================
 // Puerto
 //========================
-process.env.PORT = process.env.PORT || 3001;
+
+
+module.exports = {
+    name: 'cafe',
+    port: process.env.PORT = process.env.PORT || 3001,
+    dataBase: {
+        url: 'mongodb://localhost:27017/cafe'
+    }
+}
