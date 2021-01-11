@@ -27,7 +27,8 @@ app.get('/usuario', function (req, res) {
     limit = Number (limit);
 
     //Usuario.find({ google: true})
-    Usuario.find({})
+    //filtrando información de un get Usuario.find({}, 'nombre email') filtrará esos dos datos
+    Usuario.find({ estado: true})
         .skip(from)
         .limit(5)
         .exec((err, usuarios) => {
@@ -40,7 +41,7 @@ app.get('/usuario', function (req, res) {
 
             //retornar numero total de registros de una coleccion
             //{ google: true}
-            Usuario.count({}, (err, conteo) => {
+            Usuario.count({ estado: true}, (err, conteo) => {
                 res.json({
                     ok: true,
                     usuarios,
@@ -111,9 +112,47 @@ app.put('/usuario/:id', function (req, res) {
     })
 })
 
-//ya no se eliminan registros, si no que se cambia el estado para que no quede disponible
-app.delete('/usuario', function (req, res) {
-    res.json('delete World')
+//ya no se eliminan registros, si no que se cambia el estado para que no quede disponible 
+//para mantener la integridad referencial
+//se puede realizar mandando un post, dentro del body pasando el id
+app.delete('/usuario/:id', function (req, res) {
+    
+    let id= req.params.id;
+
+    let cambiaEstado = {
+        estado: false
+    }
+
+    //en caso de eliminar registro
+    //Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {
+
+    Usuario.findByIdAndUpdate(id, cambiaEstado, {new: true}, (err, usuarioBorrado) => {
+        //evaluar el error en la eliminacion
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        };
+
+        if (!usuarioBorrado) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: "Usuario no encontrado"
+                }
+            })
+        };
+
+        res.json({
+            ok: true,
+            usuario: usuarioBorrado
+        })
+
+
+    })
+
+
 })
 
 module.exports = app;
