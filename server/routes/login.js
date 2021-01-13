@@ -38,10 +38,16 @@ app.post('/login', (req, res) => {
             })
         }
 
+        //obtenemos el payload
+        let token = jwt.sign({
+            usuario: usuarioDB
+        }, process.env.SEED , { expiresIn: process.env.CADUCIDAD_TOKEN  })
+
         res.json({
             ok: true,
             usuario: usuarioDB,
-            token: '123'
+            token //no es necesario volver a escribirlo
+            //el token debe ser guardado en el front > localstorage
         })
     })
 

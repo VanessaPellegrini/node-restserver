@@ -46,6 +46,7 @@ let usuarioSchema = new Schema({
 })
 
 //deja de retornar el password
+//exclusion de contraseña desde el modelo
 usuarioSchema.methods.toJSON = function () {
     let user = this;
     let userObject = user.toObject();

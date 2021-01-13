@@ -9,14 +9,25 @@ const bcrypt = require('bcrypt');
 //libreria para elegir que valores del body se van a sobre-escribir
 const _ = require('underscore');
 
-
-
 const Usuario = require('../models/usuario');
+
+const { verificaToken, verificaAdminRole } = require('../middlewares/authentication')
 
 //consulta
 // /usuario?limit=10&from=10
 
-app.get('/usuario', function (req, res) {
+app.get('/usuario', verificaToken, (req, res) => {
+
+    /*
+    //Extraer usuarios independientes
+    return res.json({
+        usuario: req.usuario,
+        nombre: req.usuario.nombre,
+        email: req.usuario.email,
+    })*/
+
+
+
 
     //paginacion desde
     let from = req.query.from || 0;
@@ -24,11 +35,11 @@ app.get('/usuario', function (req, res) {
     from = Number(from);
 
     let limit = req.query.limit || 5;
-    limit = Number (limit);
+    limit = Number(limit);
 
     //Usuario.find({ google: true})
     //filtrando información de un get Usuario.find({}, 'nombre email') filtrará esos dos datos
-    Usuario.find({ estado: true})
+    Usuario.find({ estado: true })
         .skip(from)
         .limit(5)
         .exec((err, usuarios) => {
@@ -41,7 +52,7 @@ app.get('/usuario', function (req, res) {
 
             //retornar numero total de registros de una coleccion
             //{ google: true}
-            Usuario.count({ estado: true}, (err, conteo) => {
+            Usuario.count({ estado: true }, (err, conteo) => {
                 res.json({
                     ok: true,
                     usuarios,
@@ -52,7 +63,7 @@ app.get('/usuario', function (req, res) {
         });
 })
 
-app.post('/usuario', function (req, res) {
+app.post('/usuario', [verificaToken, verificaAdminRole] , (req, res) => {
     //res.json('post World')
     let body = req.body;
 
@@ -86,7 +97,7 @@ app.post('/usuario', function (req, res) {
 });
 
 //actualizar
-app.put('/usuario/:id', function (req, res) {
+app.put('/usuario/:id', [verificaToken, verificaAdminRole], (req, res) => {
 
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
@@ -115,9 +126,9 @@ app.put('/usuario/:id', function (req, res) {
 //ya no se eliminan registros, si no que se cambia el estado para que no quede disponible 
 //para mantener la integridad referencial
 //se puede realizar mandando un post, dentro del body pasando el id
-app.delete('/usuario/:id', function (req, res) {
-    
-    let id= req.params.id;
+app.delete('/usuario/:id', [verificaToken, verificaAdminRole] , (req, res) => {
+
+    let id = req.params.id;
 
     let cambiaEstado = {
         estado: false
@@ -126,7 +137,7 @@ app.delete('/usuario/:id', function (req, res) {
     //en caso de eliminar registro
     //Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {
 
-    Usuario.findByIdAndUpdate(id, cambiaEstado, {new: true}, (err, usuarioBorrado) => {
+    Usuario.findByIdAndUpdate(id, cambiaEstado, { new: true }, (err, usuarioBorrado) => {
         //evaluar el error en la eliminacion
         if (err) {
             return res.status(400).json({
