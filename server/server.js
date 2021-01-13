@@ -12,11 +12,12 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.use(require("./routes/usuario"))
+//referencia de las rutas habilitadas - conf global de rutas
+app.use(require("./routes/index"))
 
-    /* app.listen(process.env.PORT, () => {
-        console.log('escuchando puerto ' + process.env.PORT);
-    }) */
+/* app.listen(process.env.PORT, () => {
+    console.log('escuchando puerto ' + process.env.PORT);
+}) */
 const { url } = config.dataBase;
 const port = config.port;
 

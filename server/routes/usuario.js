@@ -1,6 +1,7 @@
-
 //also called controller
 const express = require('express');
+
+const app = express();
 
 //libreria para encriptar contraseña
 const bcrypt = require('bcrypt');
@@ -9,7 +10,6 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 
 
-const app = express();
 
 const Usuario = require('../models/usuario');
 
