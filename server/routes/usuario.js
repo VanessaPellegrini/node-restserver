@@ -11,7 +11,7 @@ const _ = require('underscore');
 
 const Usuario = require('../models/usuario');
 
-const { verificaToken, verificaAdminRole } = require('../middlewares/authentication')
+const { verificaToken, verificaAdmin_Role } = require('../middlewares/authentication')
 
 //consulta
 // /usuario?limit=10&from=10
@@ -25,10 +25,6 @@ app.get('/usuario', verificaToken, (req, res) => {
         nombre: req.usuario.nombre,
         email: req.usuario.email,
     })*/
-
-
-
-
     //paginacion desde
     let from = req.query.from || 0;
     //lo transforma en number porque espera un string
@@ -63,7 +59,7 @@ app.get('/usuario', verificaToken, (req, res) => {
         });
 })
 
-app.post('/usuario', [verificaToken, verificaAdminRole] , (req, res) => {
+app.post('/usuario', [verificaToken, verificaAdmin_Role] , (req, res) => {
     //res.json('post World')
     let body = req.body;
 
@@ -97,7 +93,7 @@ app.post('/usuario', [verificaToken, verificaAdminRole] , (req, res) => {
 });
 
 //actualizar
-app.put('/usuario/:id', [verificaToken, verificaAdminRole], (req, res) => {
+app.put('/usuario/:id', [verificaToken, verificaAdmin_Role], (req, res) => {
 
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
@@ -126,7 +122,7 @@ app.put('/usuario/:id', [verificaToken, verificaAdminRole], (req, res) => {
 //ya no se eliminan registros, si no que se cambia el estado para que no quede disponible 
 //para mantener la integridad referencial
 //se puede realizar mandando un post, dentro del body pasando el id
-app.delete('/usuario/:id', [verificaToken, verificaAdminRole] , (req, res) => {
+app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role] , (req, res) => {
 
     let id = req.params.id;
 
